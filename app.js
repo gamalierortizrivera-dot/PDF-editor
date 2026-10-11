@@ -789,13 +789,28 @@ tools.push({
 
 /* ---------- navegación ---------- */
 
+const CATS = [
+  ['organizar', 'Organizar PDF'],
+  ['optimizar', 'Optimizar, reparar y comparar'],
+  ['a-pdf', 'Convertir a PDF'],
+  ['desde-pdf', 'Convertir desde PDF'],
+  ['editar', 'Editar y firmar'],
+  ['seguridad', 'Seguridad y privacidad'],
+];
+
 function showHome() {
+  const card = (t) => h('button', { class: 'card', onclick: () => { location.hash = t.id; } },
+    h('div', { class: 'ico' }, t.icon), h('h3', {}, t.title), h('p', {}, t.desc));
+  const sections = CATS.map(([id, name]) => {
+    const list = tools.filter((t) => t.cat === id);
+    return list.length ? h('section', {}, h('h2', { class: 'cat' }, name), h('div', { class: 'grid' }, ...list.map(card))) : null;
+  });
+  const rest = tools.filter((t) => !CATS.some(([id]) => id === t.cat));
   app.replaceChildren(
     h('h1', {}, 'Herramientas PDF privadas'),
     h('p', { class: 'lead' }, 'Tus documentos nunca salen de este equipo. Elige una herramienta.'),
-    h('div', { class: 'grid' }, ...tools.map((t) =>
-      h('button', { class: 'card', onclick: () => { location.hash = t.id; } },
-        h('div', { class: 'ico' }, t.icon), h('h3', {}, t.title), h('p', {}, t.desc)))));
+    ...sections,
+    rest.length ? h('section', {}, h('h2', { class: 'cat' }, 'Otras'), h('div', { class: 'grid' }, ...rest.map(card))) : null);
 }
 
 function showTool(t) {
@@ -818,4 +833,5 @@ function route() {
 
 document.getElementById('home-link').addEventListener('click', (e) => { e.preventDefault(); location.hash = ''; route(); });
 window.addEventListener('hashchange', route);
-route();
+// Se ejecuta cuando todos los scripts (incluido tools-extra.js) ya registraron sus herramientas.
+window.addEventListener('DOMContentLoaded', route);
