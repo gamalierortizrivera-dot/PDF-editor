@@ -558,16 +558,17 @@ const pdfExcelTool = {
     const prog = progressBar();
     const info = h('div', { class: 'sub' });
     const sel = (opts, def) => h('select', {}, ...opts.map(([v, t]) => h('option', { value: v, selected: v === def }, t)));
-    const mode = sel([['fiel', 'Copia fiel del PDF (tablas, bordes y formato)'], ['simple', 'Solo datos (filas y columnas sin formato)']], 'fiel');
+    const modeSwitch = checkEl('Detectar tablas y conservar el formato del PDF', true);
+    const mode = { get value() { return modeSwitch.input.checked ? 'fiel' : 'simple'; } };
     const sheets = sel([['varias', 'Una hoja por página (como el PDF)'], ['una', 'Todo en una sola hoja']], 'varias');
     const cols = sel([['normal', 'Normal'], ['estricta', 'Estricta (más columnas)'], ['flexible', 'Flexible (menos columnas)']], 'normal');
     const nums = sel([['us', '1,234.56 (coma para miles)'], ['eu', '1.234,56 (punto para miles)'], ['texto', 'Dejar todo como texto']], 'us');
     const ocrMode = sel([['auto', 'Automático (solo si el PDF no tiene texto)'], ['si', 'Siempre (PDF escaneado)'], ['no', 'Nunca']], 'auto');
     const ocrLang = ocrLangSelect();
-    const go = h('button', { class: 'btn', disabled: true }, 'Convertir a Excel');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Convertir a Excel');
     const opts = h('div', { class: 'opts', hidden: true },
-      h('label', {}, h('span', { class: 'lbl' }, 'Resultado'), mode,
-        h('span', { class: 'hint' }, '"Copia fiel" reconstruye tablas con bordes, celdas combinadas, anchos de columna, negritas y colores de fondo.')),
+      h('div', {}, modeSwitch.el,
+        h('span', { class: 'hint' }, 'Reconstruye tablas con bordes, celdas combinadas, anchos de columna, negritas y colores de fondo. Apágalo para obtener solo filas y columnas.')),
       h('label', {}, h('span', { class: 'lbl' }, 'Hojas'), sheets),
       h('label', {}, h('span', { class: 'lbl' }, 'Formato de números'), nums),
       h('label', {}, h('span', { class: 'lbl' }, 'Detección de columnas'), cols,

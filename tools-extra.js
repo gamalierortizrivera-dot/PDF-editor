@@ -53,7 +53,7 @@ function pdfTool(def) {
       const prog = progressBar();
       const info = h('div', { class: 'sub' });
       const o = def.options ? def.options() : { el: [], get: () => ({}) };
-      const go = h('button', { class: 'btn', disabled: true }, def.action || 'Procesar');
+      const go = h('button', { class: 'btn go', disabled: true }, def.action || 'Procesar');
       const opts = h('div', { class: 'opts', hidden: true }, ...[].concat(o.el || []));
       const dz = dropzone({
         accept: def.accept || '.pdf', label: def.label || 'Elige el PDF',
@@ -608,7 +608,7 @@ function annotatorTool(def) {
       const status = statusArea();
       const prog = progressBar();
       const info = h('div', { class: 'sub' });
-      const workspace = h('div', { hidden: true });
+      const workspace = h('div', { class: 'ws-pane', hidden: true });
       const stage = h('div', { class: 'stage' });
       const canvasHolder = h('div', { class: 'stage-wrap' }, stage);
       const pageLabel = h('span', { class: 'pg-label' });
@@ -618,7 +618,7 @@ function annotatorTool(def) {
       const colorIn = selectEl(colorOptions, 'negro');
       const stampInfo = h('span', { class: 'hint' });
       const panelHost = h('div');
-      const go = h('button', { class: 'btn', disabled: true }, def.action);
+      const go = h('button', { class: 'btn go', disabled: true }, def.action);
 
       const toolButtons = def.tools.map((t) => h('button', { class: 'btn ghost small', 'data-tool': t.id, onclick: () => selectTool(t.id) }, t.label));
       const textControls = h('div', { class: 'row tbx' }, textIn, field('Tamaño', sizeIn), field('Color', colorIn));
@@ -900,7 +900,7 @@ extra.push({
     const files = { a: null, b: null };
     const status = statusArea();
     const prog = progressBar();
-    const go = h('button', { class: 'btn', disabled: true }, 'Comparar');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Comparar');
     const names = { a: h('div', { class: 'sub' }), b: h('div', { class: 'sub' }) };
     const upd = () => { go.disabled = !(files.a && files.b); };
     const mk = (k, label) => dropzone({

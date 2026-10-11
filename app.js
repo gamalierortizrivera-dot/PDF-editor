@@ -76,16 +76,28 @@ const tick = () => new Promise((r) => setTimeout(r, 0));
 
 function dropzone({ accept, multiple, label, onFiles }) {
   const input = h('input', { type: 'file', accept, multiple: !!multiple });
-  const box = h('div', { class: 'drop', tabindex: '0', role: 'button' },
+  const kind = /image/.test(accept) ? (multiple ? 'Seleccionar imágenes' : 'Seleccionar imagen')
+    : /xls|csv/.test(accept) ? 'Seleccionar archivo de Excel'
+      : (multiple ? 'Seleccionar archivos PDF' : 'Seleccionar archivo PDF');
+  const ico = h('span', { class: 'drop-ico' });
+  if (typeof uiIcon === 'function') ico.append(uiIcon('upload', 30));
+  const box = h('div', { class: 'drop', tabindex: '0', role: 'button', 'aria-label': kind },
+    ico,
     h('strong', {}, label),
-    h('span', {}, 'Arrastra aquí o haz clic para elegir'),
+    h('span', { class: 'drop-btn' }, '[ ' + kind + ' ]'),
+    h('span', { class: 'drop-or' }, 'o arrástralos y suéltalos aquí'),
+    h('span', { class: 'drop-priv' }, '🔒 Procesamiento 100% privado en tu dispositivo'),
     input);
   const pick = (files) => {
     const list = [...files].filter((f) => accept.split(',').some((a) => {
       a = a.trim().toLowerCase();
       return a.startsWith('.') ? f.name.toLowerCase().endsWith(a) : f.type.startsWith(a.replace('*', ''));
     }));
-    if (list.length) onFiles(multiple ? list : [list[0]]);
+    if (list.length) {
+      const chosen = multiple ? list : [list[0]];
+      box.dispatchEvent(new CustomEvent('pdf:files', { bubbles: true, detail: { files: chosen } }));
+      onFiles(chosen);
+    }
   };
   box.addEventListener('click', () => input.click());
   box.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
@@ -99,7 +111,7 @@ function dropzone({ accept, multiple, label, onFiles }) {
 function progressBar() {
   const bar = h('i');
   const label = h('div', { class: 'progress-label' });
-  const wrap = h('div', { hidden: true }, h('div', { class: 'progress' }, bar), label);
+  const wrap = h('div', { class: 'prog', hidden: true }, h('div', { class: 'progress' }, bar), label);
   return {
     el: wrap,
     set(done, total, text) {
@@ -125,7 +137,9 @@ function statusArea() {
         h('div', {}, filename + ' · ' + fmtSize(blob.size) + (detail ? ' · ' + detail : '')),
         extra || null,
         h('div', { class: 'row' },
-          h('button', { class: 'btn', onclick: () => download(blob, filename) }, 'Descargar'))));
+          h('button', { class: 'btn', onclick: () => download(blob, filename) }, '[ Descargar archivo ]'),
+          h('button', { class: 'btn ghost', onclick: (e) => e.target.dispatchEvent(new CustomEvent('pdf:reset', { bubbles: true })) },
+            '↺ Procesar otro documento'))));
     },
   };
 }
@@ -170,7 +184,7 @@ tools.push({
     const files = [];
     const status = statusArea();
     const prog = progressBar();
-    const go = h('button', { class: 'btn', disabled: true }, 'Unir PDF');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Unir PDF');
     const list = fileList(files, { reorder: true, onChange: () => { go.disabled = files.length < 2; } });
     const dz = dropzone({
       accept: '.pdf', multiple: true, label: 'Elige los PDF a unir',
@@ -222,7 +236,7 @@ tools.push({
     const mode = (v, t, hint, checked) => h('label', { class: 'radio' },
       h('input', { type: 'radio', name: 'modo', value: v, checked }),
       h('span', {}, t, h('div', { class: 'hint' }, hint)));
-    const go = h('button', { class: 'btn', disabled: true }, 'Dividir');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Dividir');
     const opts = h('div', { class: 'opts', hidden: true },
       h('label', {}, h('span', { class: 'lbl' }, 'Páginas'), ranges,
         h('span', { class: 'hint' }, 'Separa con comas. "8-" significa hasta el final.')),
@@ -283,7 +297,7 @@ tools.push({
     let dragIdx = null;
     const status = statusArea();
     const grid = h('div', { class: 'pages' });
-    const go = h('button', { class: 'btn', disabled: true }, 'Guardar PDF');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Guardar PDF');
     const prog = progressBar();
 
     const paint = () => {
@@ -366,7 +380,7 @@ tools.push({
     const info = h('div', { class: 'sub' });
     const level = h('select', {}, ...Object.entries(COMPRESS_LEVELS).map(([k, v]) =>
       h('option', { value: k, selected: k === 'media' }, v.name)));
-    const go = h('button', { class: 'btn', disabled: true }, 'Comprimir');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Comprimir');
     const opts = h('div', { class: 'opts', hidden: true },
       h('label', {}, h('span', { class: 'lbl' }, 'Nivel'), level),
       h('div', { class: 'msg warn' },
@@ -420,7 +434,7 @@ tools.push({
       h('option', { value: '1.5' }, 'Normal (≈110 ppp)'),
       h('option', { value: '2', selected: true }, 'Alta (≈145 ppp)'),
       h('option', { value: '3' }, 'Muy alta (≈215 ppp)'));
-    const go = h('button', { class: 'btn', disabled: true }, 'Convertir');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Convertir');
     const opts = h('div', { class: 'opts', hidden: true },
       h('label', {}, h('span', { class: 'lbl' }, 'Formato'), fmt),
       h('label', {}, h('span', { class: 'lbl' }, 'Resolución'), res));
@@ -459,7 +473,7 @@ tools.push({
     const status = statusArea();
     const prog = progressBar();
     const size = h('select', {}, h('option', { value: 'img' }, 'Del tamaño de cada imagen'), h('option', { value: 'a4' }, 'Página A4 (imagen ajustada)'));
-    const go = h('button', { class: 'btn', disabled: true }, 'Crear PDF');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Crear PDF');
     const list = fileList(files, { reorder: true, onChange: () => { go.disabled = !files.length; } });
     const dz = dropzone({
       accept: 'image/*', multiple: true, label: 'Elige las imágenes',
@@ -630,7 +644,7 @@ tools.push({
     const nums = sel([['us', '1,234.56 (coma para miles)'], ['eu', '1.234,56 (punto para miles)'], ['texto', 'Dejar todo como texto']], 'us');
     const ocrMode = sel([['auto', 'Automático (solo si el PDF no tiene texto)'], ['si', 'Siempre (PDF escaneado)'], ['no', 'Nunca']], 'auto');
     const ocrLang = ocrLangSelect();
-    const go = h('button', { class: 'btn', disabled: true }, 'Convertir a Excel');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Convertir a Excel');
     const opts = h('div', { class: 'opts', hidden: true },
       h('label', {}, h('span', { class: 'lbl' }, 'Reconocimiento de texto (OCR)'), ocrMode,
         h('span', { class: 'hint' }, 'Para PDF escaneados o fotos. Es más lento: puede tardar unos segundos por página.')),
@@ -741,7 +755,7 @@ tools.push({
     const prog = progressBar();
     const info = h('div', { class: 'sub' });
     const lang = ocrLangSelect();
-    const go = h('button', { class: 'btn', disabled: true }, 'Reconocer texto');
+    const go = h('button', { class: 'btn go', disabled: true }, 'Reconocer texto');
     const opts = h('div', { class: 'opts', hidden: true },
       h('label', {}, h('span', { class: 'lbl' }, 'Idioma del documento'), lang),
       h('div', { class: 'msg warn' }, 'Mantiene la imagen original de cada página y agrega una capa de texto invisible. ' +
@@ -789,49 +803,4 @@ tools.push({
 
 /* ---------- navegación ---------- */
 
-const CATS = [
-  ['organizar', 'Organizar PDF'],
-  ['optimizar', 'Optimizar, reparar y comparar'],
-  ['a-pdf', 'Convertir a PDF'],
-  ['desde-pdf', 'Convertir desde PDF'],
-  ['editar', 'Editar y firmar'],
-  ['seguridad', 'Seguridad y privacidad'],
-];
-
-function showHome() {
-  const card = (t) => h('button', { class: 'card', onclick: () => { location.hash = t.id; } },
-    h('div', { class: 'ico' }, t.icon), h('h3', {}, t.title), h('p', {}, t.desc));
-  const sections = CATS.map(([id, name]) => {
-    const list = tools.filter((t) => t.cat === id);
-    return list.length ? h('section', {}, h('h2', { class: 'cat' }, name), h('div', { class: 'grid' }, ...list.map(card))) : null;
-  });
-  const rest = tools.filter((t) => !CATS.some(([id]) => id === t.cat));
-  app.replaceChildren(
-    h('h1', {}, 'Herramientas PDF privadas'),
-    h('p', { class: 'lead' }, 'Tus documentos nunca salen de este equipo. Elige una herramienta.'),
-    ...sections,
-    rest.length ? h('section', {}, h('h2', { class: 'cat' }, 'Otras'), h('div', { class: 'grid' }, ...rest.map(card))) : null);
-}
-
-function showTool(t) {
-  const body = h('div');
-  app.replaceChildren(
-    h('button', { class: 'back', onclick: () => { location.hash = ''; } }, '← Todas las herramientas'),
-    h('div', { class: 'panel' },
-      h('h2', {}, t.icon + ' ' + t.title),
-      h('p', { class: 'sub' }, t.desc),
-      body));
-  t.render(body);
-}
-
-function route() {
-  const id = location.hash.replace('#', '');
-  const t = tools.find((x) => x.id === id);
-  if (t) showTool(t); else showHome();
-  window.scrollTo(0, 0);
-}
-
-document.getElementById('home-link').addEventListener('click', (e) => { e.preventDefault(); location.hash = ''; route(); });
-window.addEventListener('hashchange', route);
-// Se ejecuta cuando todos los scripts (incluido tools-extra.js) ya registraron sus herramientas.
-window.addEventListener('DOMContentLoaded', route);
+/* La navegación y la presentación (catálogo, pasos, búsqueda) viven en ui/shell.js. */

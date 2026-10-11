@@ -5,15 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
-<title>PDF Privado</title>
-<link rel="stylesheet" href="style.css">
+<meta name="color-scheme" content="dark">
+<title>PDF Privado — herramientas PDF 100% locales</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tools.css">
 </head>
 <body>
 <header class="top">
-  <a class="brand" href="#" id="home-link">
-    <span class="logo">PDF</span><span>Privado</span>
+  <a class="brand" href="#" id="home-link" aria-label="PDF Privado, ir al inicio">
+    <span id="logo"></span>
+    <span>PDF Privado<small>Herramientas PDF sin servidor</small></span>
   </a>
-  <span class="badge" title="Los archivos se procesan solo en tu navegador">🔒 Sin subir archivos · Sin guardar nada</span>
+  <div class="grow">
+    <div class="search" role="search">
+      <span id="search-ico"></span>
+      <label class="sr-only" for="search">Buscar herramienta</label>
+      <input id="search" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar herramienta… (unir, Excel, contraseña)  ·  pulsa /">
+    </div>
+  </div>
+  <span class="trust" title="Los archivos se procesan solo en tu navegador">
+    <span aria-hidden="true">🔒</span>
+    <span>100% Local<span class="long"> · Sin servidores · Tus archivos nunca salen de tu equipo</span></span>
+  </span>
 </header>
 
 <main id="app"></main>
@@ -33,5 +48,8 @@
 <script src="app.js"></script>
 <script src="tools-extra.js"></script>
 <script src="pdf-excel.js"></script>
+<script src="ui/icons.js"></script>
+<script src="ui/boot.js"></script>
+<script src="ui/shell.js"></script>
 </body>
 </html>
