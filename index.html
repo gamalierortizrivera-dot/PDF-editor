@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>PDF Privado</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#" id="home-link">
+    <span class="logo">PDF</span><span>Privado</span>
+  </a>
+  <span class="badge" title="Los archivos se procesan solo en tu navegador">🔒 Sin subir archivos · Sin guardar nada</span>
+</header>
+
+<main id="app"></main>
+
+<footer class="foot">
+  Todo se procesa en este equipo, dentro del navegador. Ningún archivo se envía a internet ni se guarda:
+  al cerrar o recargar la pestaña, desaparece todo.
+</footer>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
