@@ -6,6 +6,10 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#10B981">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>PDF Privado — herramientas PDF 100% locales</title>
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
@@ -25,6 +29,7 @@
       <input id="search" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar herramienta… (unir, Excel, contraseña)  ·  pulsa /">
     </div>
   </div>
+  <a class="btn ghost small appbtn" href="#app" id="app-link">⬇ App para Mac</a>
   <span class="trust" title="Los archivos se procesan solo en tu navegador">
     <span aria-hidden="true">🔒</span>
     <span>100% Local<span class="long"> · Sin servidores · Tus archivos nunca salen de tu equipo</span></span>
@@ -50,6 +55,7 @@
 <script src="pdf-excel.js"></script>
 <script src="ui/icons.js"></script>
 <script src="ui/boot.js"></script>
+<script src="ui/pwa.js"></script>
 <script src="ui/shell.js"></script>
 </body>
 </html>

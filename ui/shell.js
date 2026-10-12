@@ -193,12 +193,80 @@ function openTool(t) {
   ws.addEventListener('pdf:reset', () => openTool(t));
 }
 
+/* ---------- Instalar como app ---------- */
+
+function renderInstall() {
+  stopObserver();
+  document.title = 'Descargar app — PDF Privado';
+  const isMac = /Mac/i.test(navigator.platform || navigator.userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  const status = h('div');
+  const steps = h('div');
+
+  const paint = () => {
+    const btnHost = [];
+    if (uiPwa.installed) {
+      status.replaceChildren(h('div', { class: 'msg ok' }, '✔ Ya estás usando PDF Privado como app. Se abre en su propia ventana y funciona sin conexión.'));
+    } else if (uiPwa.deferred) {
+      status.replaceChildren(h('button', { class: 'btn go', onclick: async () => {
+        const e = uiPwa.deferred; uiPwa.deferred = null; e.prompt();
+        try { await e.userChoice; } catch { /* cancelado */ }
+        paint();
+      } }, '[ Instalar PDF Privado ]'));
+    } else {
+      status.replaceChildren(h('div', { class: 'msg warn' },
+        'Tu navegador no ofrece el botón automático. Sigue los pasos de abajo según tu navegador.'));
+    }
+    steps.replaceChildren(
+      h('div', { class: 'install-grid' },
+        h('div', { class: 'install-card' + (isSafari ? ' mine' : '') },
+          h('h3', {}, 'Safari (macOS Sonoma 14 o superior)'),
+          h('ol', {}, h('li', {}, 'Abre esta página en Safari.'),
+            h('li', {}, 'En el menú, elige Archivo → Añadir al Dock…'),
+            h('li', {}, 'Pulsa Añadir. Aparecerá “PDF Privado” en tu Dock.'))),
+        h('div', { class: 'install-card' + (!isSafari ? ' mine' : '') },
+          h('h3', {}, 'Chrome, Edge o Brave'),
+          h('ol', {}, h('li', {}, 'Pulsa el icono de instalar ⊕ en la barra de direcciones (a la derecha).'),
+            h('li', {}, 'O abre el menú ⋮ → Guardar y compartir → Instalar “PDF Privado”.'),
+            h('li', {}, 'Se abrirá en su propia ventana y quedará en Launchpad y Dock.')))),
+      h('p', { class: 'hint' }, uiPwa.offlineReady
+        ? '✔ Los archivos de la app ya están guardados en este navegador: puedes usarla sin internet.'
+        : 'La primera vez, abre la app con conexión para que se guarden sus archivos; después funciona sin internet.'));
+    void btnHost;
+  };
+  uiPwa.listeners.clear();
+  uiPwa.listeners.add(paint);
+
+  app.replaceChildren(...[
+    h('button', { class: 'back', onclick: () => { location.hash = ''; } }, uiIcon('back', 16), 'Todas las herramientas'),
+    h('section', { class: 'hero' },
+      h('h1', {}, 'Descarga PDF Privado en tu ' + (isMac ? 'Mac' : 'equipo')),
+      h('p', {}, 'Instálala como una app: icono en el Dock, ventana propia y funcionamiento sin conexión. Tus documentos se siguen procesando solo en tu equipo.')),
+    isMac ? h('div', { class: 'dmg-card' },
+      h('div', {},
+        h('h3', {}, 'Descargar para Mac (.dmg)'),
+        h('p', {}, 'App nativa para Apple Silicon e Intel (macOS 12 o superior). Ábrela y arrastra PDF Privado a Aplicaciones.')),
+      h('a', { class: 'btn', href: 'downloads/PDF-Privado-macOS.dmg', download: 'PDF-Privado-macOS.dmg' }, '[ Descargar .dmg ]'),
+      h('p', { class: 'hint' }, 'Primera vez: como la app aún no está firmada por un desarrollador de Apple, macOS puede avisar. Haz clic derecho sobre PDF Privado → Abrir → Abrir. Solo se pide una vez.')) : null,
+    h('h3', { class: 'alt-title' }, isMac ? 'O instálala desde el navegador (sin descargar nada)' : 'Instalar desde el navegador'),
+    status,
+    h('div', { class: 'install-facts' },
+      h('div', {}, h('b', {}, '🔒 Igual de privada'), h('span', {}, 'La app no sube nada: no hay servidor ni cuentas.')),
+      h('div', {}, h('b', {}, '⚡ Sin conexión'), h('span', {}, 'Tras la primera carga, funciona sin internet.')),
+      h('div', {}, h('b', {}, '🔄 Siempre al día'), h('span', {}, 'Se actualiza sola cuando hay conexión.')),
+      h('div', {}, h('b', {}, '🧹 Fácil de quitar'), h('span', {}, 'Arrástrala a la papelera como cualquier app.'))),
+    steps,
+  ].filter(Boolean));
+  paint();
+}
+
 /* ---------- Navegación ---------- */
 
 function route() {
   const id = location.hash.replace('#', '');
   const t = tools.find((x) => x.id === id && TOOL_UI[x.id]);
-  if (t) openTool(t); else renderHome();
+  if (id === 'app') renderInstall();
+  else if (t) openTool(t); else renderHome();
   window.scrollTo(0, 0);
 }
 
@@ -219,5 +287,6 @@ document.getElementById('home-link').addEventListener('click', (e) => {
   uiState.q = ''; searchInput.value = ''; uiState.cat = 'all';
   if (location.hash) location.hash = ''; else renderHome();
 });
+document.getElementById('app-link').addEventListener('click', () => { uiState.q = ''; searchInput.value = ''; });
 window.addEventListener('hashchange', route);
 route();

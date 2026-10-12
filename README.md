@@ -27,3 +27,10 @@ vendor/               Librerías locales (sin CDN)
 ```
 Para añadir una herramienta: registra un objeto `{ id, icon, title, desc, render(box) }` en `tools` y
 agrega su entrada (categoría, descripción corta, palabras clave) en `TOOL_UI` de `ui/shell.js`.
+
+## App nativa de macOS (.dmg)
+`mac/build.sh` construye `downloads/PDF-Privado-macOS.dmg` (universal: Apple Silicon + Intel) con las
+herramientas de línea de comandos de Xcode. La app es un envoltorio WKWebView que sirve la web desde su
+propio paquete (esquema `app://`); no abre conexiones de red. Está firmada ad hoc: para distribuirla sin
+avisos de Gatekeeper hace falta firma y notarización con una cuenta de Apple Developer.
+Autoprueba: `PDFPRIVADO_SELFTEST=1 "mac/build/PDF Privado.app/Contents/MacOS/PDFPrivado"`.
