@@ -619,6 +619,13 @@ function annotatorTool(def) {
       const stampInfo = h('span', { class: 'hint' });
       const panelHost = h('div');
       const go = h('button', { class: 'btn go', disabled: true }, def.action);
+      const previewHost = h('div', { hidden: true });
+      const closePreview = () => {
+        const p = previewHost.firstChild;
+        if (p && typeof p.close === 'function') p.close();
+        previewHost.replaceChildren();
+        previewHost.hidden = true;
+      };
 
       const toolButtons = def.tools.map((t) => h('button', { class: 'btn ghost small', 'data-tool': t.id, onclick: () => selectTool(t.id) }, t.label));
       const textControls = h('div', { class: 'row tbx' }, textIn, field('Tamaño', sizeIn), field('Color', colorIn));
@@ -760,6 +767,7 @@ function annotatorTool(def) {
         accept: '.pdf', label: 'Elige el PDF',
         onFiles: async ([f]) => {
           status.clear();
+          closePreview();
           try {
             pdf = await openPdfJs(f);
             file = f; cur = 1; items = []; go.disabled = true;
@@ -774,10 +782,21 @@ function annotatorTool(def) {
       go.addEventListener('click', runner(go, status, async () => {
         const r = await def.export({ file, pdf, items, prog });
         prog.hide();
-        status.done({ blob: pdfBlob(r.bytes), filename: baseName(file) + def.suffix, detail: r.detail });
+        const filename = baseName(file) + def.suffix;
+        if (def.preview) {
+          closePreview();
+          status.clear();
+          const panel = docPreview({ bytes: r.bytes, filename, detail: r.detail,
+            onBack: () => { closePreview(); workspace.hidden = false; } });
+          previewHost.append(panel);
+          previewHost.hidden = false;
+          workspace.hidden = true;
+        } else {
+          status.done({ blob: pdfBlob(r.bytes), filename, detail: r.detail });
+        }
       }));
 
-      box.append(dz, info, workspace, prog.el, status.el);
+      box.append(dz, info, workspace, previewHost, prog.el, status.el);
       textControls.hidden = true;
     },
   };
@@ -826,6 +845,68 @@ async function applyItems(doc, items) {
   }
 }
 
+/**
+ * Vista previa del documento resultante de un annotatorTool (herramienta Editar):
+ * renderiza los bytes generados por pdf-lib con pdf.js (todo local, sin red),
+ * con paginación cuando hay varias páginas. Ofrece [ Descargar ] o Volver a editar.
+ * Devuelve el panel; `panel.close()` libera el documento de pdf.js.
+ */
+function docPreview({ bytes, filename, detail, onBack }) {
+  let doc = null, cur = 1, done = false;
+  const blob = pdfBlob(bytes);
+  const label = h('span', { class: 'pg-label' });
+  const holder = h('div', { class: 'stage-wrap docprev-pages' });
+  const prev = h('button', { class: 'btn ghost small', onclick: () => step(-1) }, '◀ Anterior');
+  const next = h('button', { class: 'btn ghost small', onclick: () => step(1) }, 'Siguiente ▶');
+  const nav = h('div', { class: 'row nav', hidden: true }, prev, label, next);
+
+  async function step(d) {
+    const n = cur + d;
+    if (!doc || n < 1 || n > doc.numPages) return;
+    cur = n;
+    await showPage();
+  }
+
+  async function showPage() {
+    label.textContent = 'Página ' + cur + ' de ' + doc.numPages;
+    prev.disabled = cur <= 1;
+    next.disabled = cur >= doc.numPages;
+    const canvas = await renderCanvas(doc, cur, 1.2);
+    if (!done) holder.replaceChildren(canvas);
+  }
+
+  const panel = h('div', { class: 'docprev' },
+    h('h3', {}, 'Vista previa'),
+    h('div', { class: 'sub' }, filename + ' · ' + fmtSize(blob.size) + (detail ? ' · ' + detail : '') +
+      ' — así quedó tu PDF editado. Revísalo y descárgalo si está bien.'),
+    nav,
+    holder,
+    h('div', { class: 'row docprev-actions' },
+      h('button', { class: 'btn', onclick: () => download(blob, filename) }, '[ Descargar ]'),
+      h('button', { class: 'btn ghost', onclick: close }, '↩ Volver a editar')));
+
+  function close() {
+    if (done) return;
+    done = true;
+    if (doc) { const d = doc; doc = null; try { Promise.resolve(d.destroy()).catch(() => {}); } catch { /* ya liberado */ } }
+    if (onBack) onBack();
+  }
+
+  (async () => {
+    try {
+      doc = await pdfjsLib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
+      if (done) { const d = doc; doc = null; try { Promise.resolve(d.destroy()).catch(() => {}); } catch { /* ya liberado */ } return; }
+      nav.hidden = doc.numPages < 2;
+      await showPage();
+    } catch (e) {
+      holder.replaceChildren(h('div', { class: 'msg err' }, 'No se pudo generar la vista previa: ' + (e && e.message ? e.message : e)));
+    }
+  })();
+
+  panel.close = close;
+  return panel;
+}
+
 extra.push(annotatorTool({
   id: 'firmar', icon: '✍️', title: 'Firmar PDF', cat: 'editar', action: 'Guardar PDF firmado', suffix: '-firmado.pdf',
   desc: 'Dibuja o escribe tu firma y colócala en el documento.',
@@ -843,7 +924,8 @@ extra.push(annotatorTool({
 }));
 
 extra.push(annotatorTool({
-  id: 'editar', icon: '✏️', title: 'Editar PDF', cat: 'editar', action: 'Guardar PDF editado', suffix: '-editado.pdf',
+  id: 'editar', icon: '✏️', title: 'Editar PDF', cat: 'editar', action: 'Vista previa y guardar', suffix: '-editado.pdf',
+  preview: true,
   desc: 'Añade texto, imágenes, resaltados o tapa partes del documento.',
   tools: [
     { id: 'text', label: '🔤 Texto', hint: 'Escribe el texto y haz clic en la página para colocarlo.' },
