@@ -40,6 +40,14 @@
 .sigpad { width: 100%; max-width: 480px; height: auto; background: #fff; border-radius: var(--r-sm); touch-action: none; cursor: crosshair; display: block; }
 .sigpanel input[type=file] { color: var(--muted); }
 
+/* Vista previa del documento resultante (herramienta Editar) */
+.docprev { margin-top: 16px; border: 1px solid var(--line-soft); border-radius: var(--r-lg); background: var(--surface); padding: 16px; box-shadow: var(--shadow); }
+.docprev h3 { margin: 0 0 6px; }
+.docprev .sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.docprev-pages { display: flex; justify-content: center; max-height: 70vh; }
+.docprev-pages canvas { background: #fff; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
+.docprev-actions { margin-top: 12px; }
+
 /* Comparar */
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 640px) { .two { grid-template-columns: 1fr; } }
