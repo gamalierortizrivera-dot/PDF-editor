@@ -1,15 +1,18 @@
-PDF Privado - cambios de "vista previa antes de descargar"
+PDF Privado - cambios: "Organizar y Eliminar Páginas"
 
-Sube estos 5 archivos al repo gamalierortizrivera-dot/PDF-editor (rama main),
-respetando la carpeta de cada uno (reemplazan a los que ya existen):
+Se quitó la herramienta "Eliminar páginas" (Organizar ya permite eliminar con el botón ✕ y reordenar),
+y "Organizar páginas" ahora se llama "Organizar y Eliminar Páginas". Si alguien entra con #eliminar, se redirige a Organizar.
 
-  app.js            -> raiz del repo
-  tools-extra.js    -> raiz del repo
-  pdf-excel.js      -> raiz del repo
-  sw.js             -> raiz del repo
-  css/tools.css     -> carpeta css/
+Sube estos archivos al repo gamalierortizrivera-dot/PDF-editor (rama main),
+respetando la carpeta de cada uno (reemplazan a los existentes):
 
-Desde la web de GitHub: entra a la carpeta (o a la raiz), Add file > Upload files,
-elige el archivo y haz Commit. Para css/tools.css, abre primero la carpeta css/.
+  app.js          -> raiz del repo
+  tools-extra.js  -> raiz del repo
+  sw.js           -> raiz del repo (caché v3 -> v4)
+  README.md       -> raiz del repo
+  ui/icons.js     -> carpeta ui/
+  ui/shell.js     -> carpeta ui/
 
-Si algo falla, la copia anterior esta en PDF-editor-backup-antes-vista-previa.zip.
+Archivos a BORRAR desde la web: ninguno.
+
+En GitHub web: entra a la carpeta (o raiz), Add file > Upload files, elige el archivo y Commit.

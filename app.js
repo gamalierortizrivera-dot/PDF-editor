@@ -462,8 +462,8 @@ tools.push({
 
 /* 3. Organizar */
 tools.push({
-  id: 'organizar', icon: '🗂️', title: 'Organizar páginas',
-  desc: 'Reordena arrastrando, gira o elimina páginas.',
+  id: 'organizar', icon: '🗂️', title: 'Organizar y Eliminar Páginas',
+  desc: 'Reordena arrastrando, gira o elimina las páginas que no quieres.',
   render(box) {
     let file = null;
     let pages = []; // { orig, rot, canvas }

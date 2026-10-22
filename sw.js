@@ -3,7 +3,7 @@
  * funcione sin conexión. Los documentos del usuario nunca pasan por aquí: se leen en la página. */
 'use strict';
 
-const CACHE = 'pdf-privado-v3';
+const CACHE = 'pdf-privado-v4';
 const CORE = [
   './', 'index.html', 'manifest.webmanifest',
   'css/tokens.css', 'css/base.css', 'css/components.css', 'css/tools.css',

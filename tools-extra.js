@@ -139,24 +139,6 @@ extra.push(pdfTool({
 }));
 
 extra.push(pdfTool({
-  id: 'eliminar', icon: '🗑️', title: 'Eliminar páginas', cat: 'organizar', action: 'Eliminar páginas',
-  desc: 'Quita las páginas que no necesitas.',
-  options() {
-    const pages = textEl('Ej.: 2, 4-6');
-    return { el: [field('Páginas a eliminar', pages, 'Separa con comas. "8-" significa hasta el final.')], get: () => ({ pages: pages.value }) };
-  },
-  async run({ file, opts }) {
-    const doc = await openPdfLib(file);
-    const n = doc.getPageCount();
-    const set = pageSet(opts.pages, n);
-    if (!set.size) throw new Error('Escribe qué páginas quieres eliminar.');
-    if (set.size >= n) throw new Error('No puedes eliminar todas las páginas del documento.');
-    [...set].sort((a, b) => b - a).forEach((i) => doc.removePage(i));
-    return { bytes: await doc.save(), filename: baseName(file) + '-sin-paginas.pdf', detail: set.size + ' eliminadas · quedan ' + doc.getPageCount() };
-  },
-}));
-
-extra.push(pdfTool({
   id: 'numerar', icon: '🔢', title: 'Numerar páginas', cat: 'editar', action: 'Numerar',
   desc: 'Añade el número de página en cada hoja.',
   options() {
