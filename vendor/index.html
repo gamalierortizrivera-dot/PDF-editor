@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#10B981">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>PDF Privado — herramientas PDF 100% locales</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tools.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#" id="home-link" aria-label="PDF Privado, ir al inicio">
+    <span id="logo"></span>
+    <span>PDF Privado<small>Herramientas PDF sin servidor</small></span>
+  </a>
+  <div class="grow">
+    <div class="search" role="search">
+      <span id="search-ico"></span>
+      <label class="sr-only" for="search">Buscar herramienta</label>
+      <input id="search" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar herramienta… (unir, Excel, contraseña)  ·  pulsa /">
+    </div>
+  </div>
+  <a class="btn ghost small appbtn" href="#app" id="app-link">⬇ App para Mac</a>
+  <span class="trust" title="Los archivos se procesan solo en tu navegador">
+    <span aria-hidden="true">🔒</span>
+    <span>100% Local<span class="long"> · Sin servidores · Tus archivos nunca salen de tu equipo</span></span>
+  </span>
+</header>
+
+<main id="app"></main>
+
+<footer class="foot">
+  Todo se procesa en este equipo, dentro del navegador. Ningún archivo se envía a internet ni se guarda:
+  al cerrar o recargar la pestaña, desaparece todo.
+</footer>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="vendor/pptxgen.min.js"></script>
+<script src="vendor/exceljs.min.js"></script>
+<script src="vendor/qrcode.min.js"></script>
+<script src="app.js"></script>
+<script src="tools-extra.js"></script>
+<script src="pdf-excel.js"></script>
+<script src="qr-tool.js"></script>
+<script src="ui/icons.js"></script>
+<script src="ui/boot.js"></script>
+<script src="ui/pwa.js"></script>
+<script src="ui/shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+PDF Privado - nueva herramienta "Crear código QR"
+(incluye también los cambios pendientes de "Organizar y Eliminar Páginas" en ui/)
+
+IMPORTANTE: en GitHub (origin/main) los archivos icons.js y shell.js quedaron en la RAIZ
+del repo por error; deben estar dentro de la carpeta ui/. Esta carpeta ya trae las versiones
+correctas para ui/ (con lo de Organizar y lo de QR juntos).
+
+SUBIR al repo gamalierortizrivera-dot/PDF-editor (rama main), respetando carpetas
+(reemplazan o se agregan):
+
+  qr-tool.js              -> raiz del repo   (NUEVO)
+  index.html              -> raiz del repo
+  sw.js                   -> raiz del repo   (caché v5, lista CORE con los archivos nuevos)
+  README.md               -> raiz del repo
+  css/tools.css           -> carpeta css/
+  ui/icons.js             -> carpeta ui/
+  ui/shell.js             -> carpeta ui/
+  vendor/qrcode.min.js    -> carpeta vendor/ (NUEVO, librería MIT, local, sin CDN)
+
+BORRAR desde la web de GitHub (archivos sueltos en la raiz, subidos por error):
+  icons.js   (el de la raiz, NO el de ui/)
+  shell.js   (el de la raiz, NO el de ui/)
+
+Cómo subir: entra a la carpeta (o raiz) > Add file > Upload files > elige el archivo > Commit.
+Para vendor/, css/ y ui/ abre primero esa carpeta. Para borrar: abre el archivo > ... > Delete file.
