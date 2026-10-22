@@ -25,6 +25,7 @@ const UI_ICON_PATHS = {
   editar: ['M4 20h4L19 9l-4-4L4 16z', 'M13 7l4 4'],
   censurar: ['M4 6h16', 'M4 18h16', 'M4 10h16v4H4z'],
   comparar: ['M7 4v16', 'M17 4v16', 'M4 8l3-3 3 3', 'M14 16l3 3 3-3'],
+  qr: ['M4 4h6v6H4z', 'M14 4h6v6h-6z', 'M4 14h6v6H4z', 'M14 14h3v3h-3z', 'M20 14v6h-6', 'M7 7h.01', 'M17 7h.01', 'M7 17h.01'],
   upload: ['M12 16V4', 'M7 9l5-5 5 5', 'M4 16v4h16v-4'],
   search: ['M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14z', 'M20 20l-4-4'],
   back: ['M15 5l-7 7 7 7'],

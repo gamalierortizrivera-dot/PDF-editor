@@ -57,17 +57,18 @@
 .diff .dadd { background: var(--accent-soft); color: var(--accent-2); }
 .pgref { display: inline-block; min-width: 70px; font-size: 12px; opacity: .8; margin-right: 8px; }
 
-/* Vista previa genérica del resultado (PDF, Excel, ZIP) antes de descargar */
-.result .docprev-body { margin: 12px 0; }
-.result .docprev-pages { max-height: 65vh; overflow: auto; }
-.result .docprev-pages canvas { max-width: 100%; height: auto; background: #fff; box-shadow: 0 4px 18px rgba(0, 0, 0, .55); }
-.result .nav .btn.active { border-color: var(--accent); color: var(--accent); }
-.zipgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 8px; max-height: 50vh; overflow: auto; }
-.zipgrid figure { margin: 0; text-align: center; font-size: 12px; color: var(--muted); }
-.zipgrid img { max-width: 100%; max-height: 110px; background: #fff; border-radius: 6px; }
-.zipgrid .zipdoc { font-size: 40px; line-height: 110px; }
-.zipgrid figcaption { overflow-wrap: anywhere; margin-top: 4px; }
-.officeprev { max-height: 50vh; padding: 10px 14px; }
-.officeprev p { margin: 4px 0; font-size: 13px; }
-.officeprev h4 { margin: 12px 0 2px; color: var(--accent); }
-.officeprev .slideimg { display: block; max-width: 100%; max-height: 260px; margin: 6px 0; border-radius: 6px; background: #fff; }
+/* Crear código QR */
+.qr { display: grid; gap: 20px; align-items: start; }
+.qr-prev { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.qr-canvas { width: min(100%, 300px); height: auto; aspect-ratio: 1; border: 1px solid var(--line-soft); border-radius: var(--r-md); background: #fff; }
+.qr-prev .row { justify-content: center; }
+.qr-form { display: grid; gap: 16px; min-width: 0; }
+.qr-h { margin: 8px 0 0; font-size: 17px; }
+.qr-area { width: 100%; font: inherit; padding: 9px 11px; color: var(--text); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: var(--r-sm); resize: vertical; }
+.qr-area:focus { outline: none; border-color: var(--accent-2); }
+.qr-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.qr-color { width: 100%; height: 44px; padding: 3px; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: var(--r-sm); }
+@media (min-width: 720px) {
+  .qr { grid-template-columns: 320px minmax(0, 1fr); }
+  .qr-prev { position: sticky; top: 84px; }
+}

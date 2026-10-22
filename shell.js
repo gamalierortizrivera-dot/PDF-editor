@@ -35,6 +35,7 @@ const TOOL_UI = {
   firmar: { cat: 'sec', short: 'Dibuja o escribe tu firma.', kw: 'firma sign rubrica' },
   editar: { cat: 'sec', short: 'Añade texto, imágenes y resaltados.', kw: 'texto imagen resaltar tapar anotar' },
   censurar: { cat: 'sec', short: 'Oculta datos sensibles de verdad.', kw: 'redactar tachar ocultar privacidad' },
+  qr: { cat: 'org', short: 'Crea un QR y ponlo en un PDF.', kw: 'qr codigo barras wifi vcard enlace url contacto escanear' },
   comparar: { cat: 'sec', short: 'Muestra qué cambió entre versiones.', kw: 'diferencias diff versiones cambios' },
 };
 const TOOL_ORDER = Object.keys(TOOL_UI);

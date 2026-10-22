@@ -6,7 +6,7 @@ Editor de PDF
 **Optimizar:** Comprimir, OCR (PDF escaneado a PDF buscable), Reparar, Comparar.
 **Convertir a PDF:** Imágenes a PDF, Excel a PDF.
 **Convertir desde PDF:** PDF a imágenes, PDF a Excel (copia fiel: tablas con bordes, celdas combinadas, anchos, formato y OCR), PDF a Word, PDF a PowerPoint.
-**Editar y firmar:** Numerar páginas, Marca de agua, Recortar, Firmar, Editar (texto, imágenes, resaltado).
+**Editar y firmar:** Crear código QR (texto/URL, Wi-Fi, contacto, email, teléfono, SMS; PNG/SVG o dentro de un PDF), Numerar páginas, Marca de agua, Recortar, Firmar, Editar (texto, imágenes, resaltado).
 **Seguridad:** Proteger con contraseña, Desbloquear, Censurar (elimina el contenido), Metadatos.
 
 

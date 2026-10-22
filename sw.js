@@ -3,14 +3,14 @@
  * funcione sin conexión. Los documentos del usuario nunca pasan por aquí: se leen en la página. */
 'use strict';
 
-const CACHE = 'pdf-privado-v4';
+const CACHE = 'pdf-privado-v5';
 const CORE = [
   './', 'index.html', 'manifest.webmanifest',
   'css/tokens.css', 'css/base.css', 'css/components.css', 'css/tools.css',
   'ui/icons.js', 'ui/boot.js', 'ui/pwa.js', 'ui/shell.js',
-  'app.js', 'tools-extra.js', 'pdf-excel.js',
+  'app.js', 'tools-extra.js', 'pdf-excel.js', 'qr-tool.js',
   'vendor/pdf-lib.min.js', 'vendor/pdf.min.js', 'vendor/pdf.worker.min.js', 'vendor/xlsx.full.min.js',
-  'vendor/jszip.min.js', 'vendor/exceljs.min.js', 'vendor/pptxgen.min.js', 'vendor/tesseract/tesseract.min.js',
+  'vendor/jszip.min.js', 'vendor/exceljs.min.js', 'vendor/pptxgen.min.js', 'vendor/qrcode.min.js', 'vendor/tesseract/tesseract.min.js',
   'icons/icon-192.png', 'icons/icon-512.png',
 ];
 
