@@ -15,14 +15,13 @@ const UI_CATS = [
 const TOOL_UI = {
   unir: { cat: 'org', short: 'Combina varios PDF en uno solo.', kw: 'combinar juntar fusionar merge' },
   dividir: { cat: 'org', short: 'Separa o extrae páginas del documento.', kw: 'separar extraer partir split' },
-  organizar: { cat: 'org', short: 'Reordena, gira o elimina páginas.', kw: 'ordenar reordenar mover arrastrar' },
+  organizar: { cat: 'org', short: 'Reordena, gira y elimina páginas.', kw: 'ordenar reordenar mover arrastrar' },
   comprimir: { cat: 'sec', short: 'Reduce el peso del archivo.', kw: 'reducir tamaño peso optimizar' },
   'pdf-imagenes': { cat: 'from', short: 'Cada página como imagen JPG o PNG.', kw: 'jpg png foto imagen exportar' },
   'imagenes-pdf': { cat: 'to', short: 'Junta fotos y escaneos en un PDF.', kw: 'jpg png foto imagen escaner' },
   'pdf-excel': { cat: 'from', short: 'Extrae tablas a una hoja de Excel.', kw: 'xlsx tabla hoja calculo exel' },
   ocr: { cat: 'sec', short: 'Haz buscable el texto de un escaneo.', kw: 'escaneado texto reconocer buscable ocr' },
   girar: { cat: 'org', short: 'Gira todas las páginas o algunas.', kw: 'rotar orientacion' },
-  eliminar: { cat: 'org', short: 'Quita las páginas que no necesitas.', kw: 'borrar quitar paginas' },
   numerar: { cat: 'sec', short: 'Añade el número en cada página.', kw: 'numeracion paginas foliar' },
   'marca-agua': { cat: 'sec', short: 'Estampa un texto sobre cada página.', kw: 'watermark sello confidencial borrador' },
   recortar: { cat: 'org', short: 'Quita márgenes de las páginas.', kw: 'crop margenes cortar' },
@@ -36,6 +35,7 @@ const TOOL_UI = {
   firmar: { cat: 'sec', short: 'Dibuja o escribe tu firma.', kw: 'firma sign rubrica' },
   editar: { cat: 'sec', short: 'Añade texto, imágenes y resaltados.', kw: 'texto imagen resaltar tapar anotar' },
   censurar: { cat: 'sec', short: 'Oculta datos sensibles de verdad.', kw: 'redactar tachar ocultar privacidad' },
+  qr: { cat: 'org', short: 'Crea un QR y ponlo en un PDF.', kw: 'qr codigo barras wifi vcard enlace url contacto escanear' },
   comparar: { cat: 'sec', short: 'Muestra qué cambió entre versiones.', kw: 'diferencias diff versiones cambios' },
 };
 const TOOL_ORDER = Object.keys(TOOL_UI);
@@ -263,7 +263,8 @@ function renderInstall() {
 /* ---------- Navegación ---------- */
 
 function route() {
-  const id = location.hash.replace('#', '');
+  let id = location.hash.replace('#', '');
+  if (id === 'eliminar') { history.replaceState(null, '', '#organizar'); id = 'organizar'; }
   const t = tools.find((x) => x.id === id && TOOL_UI[x.id]);
   if (id === 'app') renderInstall();
   else if (t) openTool(t); else renderHome();
