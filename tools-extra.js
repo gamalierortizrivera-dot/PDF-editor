@@ -852,35 +852,14 @@ async function applyItems(doc, items) {
  * Devuelve el panel; `panel.close()` libera el documento de pdf.js.
  */
 function docPreview({ bytes, filename, detail, onBack }) {
-  let doc = null, cur = 1, done = false;
+  let done = false;
   const blob = pdfBlob(bytes);
-  const label = h('span', { class: 'pg-label' });
-  const holder = h('div', { class: 'stage-wrap docprev-pages' });
-  const prev = h('button', { class: 'btn ghost small', onclick: () => step(-1) }, '◀ Anterior');
-  const next = h('button', { class: 'btn ghost small', onclick: () => step(1) }, 'Siguiente ▶');
-  const nav = h('div', { class: 'row nav', hidden: true }, prev, label, next);
-
-  async function step(d) {
-    const n = cur + d;
-    if (!doc || n < 1 || n > doc.numPages) return;
-    cur = n;
-    await showPage();
-  }
-
-  async function showPage() {
-    label.textContent = 'Página ' + cur + ' de ' + doc.numPages;
-    prev.disabled = cur <= 1;
-    next.disabled = cur >= doc.numPages;
-    const canvas = await renderCanvas(doc, cur, 1.2);
-    if (!done) holder.replaceChildren(canvas);
-  }
-
+  const viewer = pdfViewer(bytes);
   const panel = h('div', { class: 'docprev' },
     h('h3', {}, 'Vista previa'),
     h('div', { class: 'sub' }, filename + ' · ' + fmtSize(blob.size) + (detail ? ' · ' + detail : '') +
       ' — así quedó tu PDF editado. Revísalo y descárgalo si está bien.'),
-    nav,
-    holder,
+    viewer.el,
     h('div', { class: 'row docprev-actions' },
       h('button', { class: 'btn', onclick: () => download(blob, filename) }, '[ Descargar ]'),
       h('button', { class: 'btn ghost', onclick: close }, '↩ Volver a editar')));
@@ -888,20 +867,9 @@ function docPreview({ bytes, filename, detail, onBack }) {
   function close() {
     if (done) return;
     done = true;
-    if (doc) { const d = doc; doc = null; try { Promise.resolve(d.destroy()).catch(() => {}); } catch { /* ya liberado */ } }
+    viewer.destroy();
     if (onBack) onBack();
   }
-
-  (async () => {
-    try {
-      doc = await pdfjsLib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
-      if (done) { const d = doc; doc = null; try { Promise.resolve(d.destroy()).catch(() => {}); } catch { /* ya liberado */ } return; }
-      nav.hidden = doc.numPages < 2;
-      await showPage();
-    } catch (e) {
-      holder.replaceChildren(h('div', { class: 'msg err' }, 'No se pudo generar la vista previa: ' + (e && e.message ? e.message : e)));
-    }
-  })();
 
   panel.close = close;
   return panel;

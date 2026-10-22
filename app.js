@@ -123,21 +123,194 @@ function progressBar() {
   };
 }
 
-/** Panel de estado reutilizable: mensajes de error/aviso y resultado descargable. */
+/**
+ * Visor de PDF para la vista previa: renderiza los bytes con pdf.js (todo local) de a una página.
+ * Devuelve { el, destroy }; destroy() libera el documento de pdf.js.
+ */
+function pdfViewer(bytes) {
+  let doc = null, cur = 1, gone = false;
+  const label = h('span', { class: 'pg-label' });
+  const holder = h('div', { class: 'stage-wrap docprev-pages' });
+  const prev = h('button', { class: 'btn ghost small', onclick: () => step(-1) }, '◀ Anterior');
+  const next = h('button', { class: 'btn ghost small', onclick: () => step(1) }, 'Siguiente ▶');
+  const nav = h('div', { class: 'row nav', hidden: true }, prev, label, next);
+  const release = () => {
+    const d = doc; doc = null;
+    if (d) { try { Promise.resolve(d.destroy()).catch(() => {}); } catch { /* ya liberado */ } }
+  };
+
+  async function step(d) {
+    const n = cur + d;
+    if (!doc || n < 1 || n > doc.numPages) return;
+    cur = n;
+    await showPage();
+  }
+
+  async function showPage() {
+    const d = doc;
+    label.textContent = 'Página ' + cur + ' de ' + d.numPages;
+    prev.disabled = cur <= 1;
+    next.disabled = cur >= d.numPages;
+    const canvas = await renderCanvas(d, cur, 1.2);
+    if (!gone) holder.replaceChildren(canvas);
+  }
+
+  (async () => {
+    try {
+      doc = await pdfjsLib.getDocument({ data: bytes.slice(), isEvalSupported: false }).promise;
+      if (gone) { release(); return; }
+      nav.hidden = doc.numPages < 2;
+      await showPage();
+    } catch (e) {
+      holder.replaceChildren(h('div', { class: 'msg err' }, 'No se pudo generar la vista previa: ' + (e && e.message ? e.message : e)));
+    }
+  })();
+
+  return { el: h('div', {}, nav, holder), destroy() { gone = true; release(); } };
+}
+
+/** Vista previa de una hoja de cálculo (.xlsx): pestañas por hoja y las primeras filas. */
+function xlsxViewer(buf) {
+  const MAX_ROWS = 40, MAX_COLS = 14;
+  const tabs = h('div', { class: 'row nav' });
+  const holder = h('div', { class: 'preview' });
+  const el = h('div', {}, tabs, holder);
+  try {
+    const wb = XLSX.read(buf, { type: 'array' });
+    const show = (name) => {
+      const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '', blankrows: false });
+      const rows = aoa.slice(0, MAX_ROWS);
+      const width = Math.min(Math.max(1, ...rows.map((r) => r.length)), MAX_COLS);
+      holder.replaceChildren(h('table', {}, ...rows.map((r) =>
+        h('tr', {}, ...Array.from({ length: width }, (_, i) => h('td', {}, r[i] == null ? '' : String(r[i])))))));
+      if (aoa.length > MAX_ROWS) holder.append(h('div', { class: 'hint' }, 'Mostrando ' + MAX_ROWS + ' de ' + aoa.length + ' filas.'));
+      [...tabs.children].forEach((b) => b.classList.toggle('active', b.dataset.sheet === name));
+    };
+    if (wb.SheetNames.length > 1) {
+      tabs.append(...wb.SheetNames.slice(0, 30).map((n) => h('button', { class: 'btn ghost small', 'data-sheet': n, onclick: () => show(n) }, n)));
+    }
+    show(wb.SheetNames[0]);
+  } catch (e) {
+    holder.replaceChildren(h('div', { class: 'msg err' }, 'No se pudo generar la vista previa: ' + (e && e.message ? e.message : e)));
+  }
+  return { el, destroy() {} };
+}
+
+/** Vista previa de un .zip: lista de archivos y, si son imágenes, miniaturas. */
+function zipViewer(blob) {
+  const holder = h('div', { class: 'zipprev' }, h('div', { class: 'hint' }, 'Leyendo el contenido…'));
+  const urls = [];
+  let gone = false;
+  (async () => {
+    try {
+      const zip = await JSZip.loadAsync(blob);
+      const entries = Object.values(zip.files).filter((f) => !f.dir);
+      const items = [];
+      for (const f of entries) {
+        const isImg = /\.(png|jpe?g)$/i.test(f.name);
+        let thumb = null;
+        if (isImg && items.length < 60) {
+          const b = new Blob([await f.async('uint8array')], { type: /png$/i.test(f.name) ? 'image/png' : 'image/jpeg' });
+          const u = URL.createObjectURL(b);
+          urls.push(u);
+          thumb = h('img', { src: u, alt: f.name });
+        }
+        items.push(h('figure', {}, thumb || h('div', { class: 'zipdoc' }, '📄'), h('figcaption', {}, f.name)));
+      }
+      if (gone) { urls.forEach((u) => URL.revokeObjectURL(u)); return; }
+      holder.replaceChildren(h('div', { class: 'hint' }, entries.length + ' archivo(s) dentro del .zip:'),
+        h('div', { class: 'zipgrid' }, ...items));
+    } catch (e) {
+      holder.replaceChildren(h('div', { class: 'msg err' }, 'No se pudo generar la vista previa: ' + (e && e.message ? e.message : e)));
+    }
+  })();
+  return { el: holder, destroy() { gone = true; urls.forEach((u) => URL.revokeObjectURL(u)); } };
+}
+
+/** Vista previa de un .docx (texto) o .pptx (imagen y texto por diapositiva), leyendo su contenido localmente. */
+function officeViewer(blob, kind) {
+  const urls = [];
+  const holder = h('div', { class: 'preview officeprev' }, h('div', { class: 'hint' }, 'Leyendo el documento…'));
+  const textOf = (xml, para, run) => {
+    const d = new DOMParser().parseFromString(xml, 'application/xml');
+    return [...d.getElementsByTagName(para)].map((p) =>
+      [...p.getElementsByTagName(run)].map((t) => t.textContent).join('')).filter((t) => t.trim());
+  };
+  (async () => {
+    try {
+      const zip = await JSZip.loadAsync(blob);
+      const parts = [];
+      if (kind === 'docx') {
+        const lines = textOf(await zip.file('word/document.xml').async('string'), 'w:p', 'w:t');
+        parts.push(h('div', { class: 'hint' }, lines.length + ' párrafo(s) de texto (la vista previa no muestra el diseño):'),
+          ...lines.slice(0, 80).map((t) => h('p', {}, t)));
+      } else {
+        const names = Object.keys(zip.files).filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+          .sort((a, b) => parseInt(a.replace(/\D/g, ''), 10) - parseInt(b.replace(/\D/g, ''), 10));
+        parts.push(h('div', { class: 'hint' }, names.length + ' diapositiva(s):'));
+        for (let i = 0; i < names.length && i < 40; i++) {
+          const lines = textOf(await zip.file(names[i]).async('string'), 'a:p', 'a:t');
+          parts.push(h('h4', {}, 'Diapositiva ' + (i + 1)));
+          const relFile = zip.file(names[i].replace('slides/', 'slides/_rels/') + '.rels');
+          const rel = relFile ? await relFile.async('string') : '';
+          for (const m of rel.matchAll(/Target="\.\.\/media\/([^"]+\.(?:png|jpe?g))"/gi)) {
+            const f = zip.file('ppt/media/' + m[1]);
+            if (!f) continue;
+            const u = URL.createObjectURL(new Blob([await f.async('uint8array')], { type: /png$/i.test(m[1]) ? 'image/png' : 'image/jpeg' }));
+            urls.push(u);
+            parts.push(h('img', { src: u, alt: 'Diapositiva ' + (i + 1), class: 'slideimg' }));
+          }
+          parts.push(...lines.slice(0, 12).map((t) => h('p', {}, t)));
+        }
+      }
+      holder.replaceChildren(...parts);
+    } catch (e) {
+      holder.replaceChildren(h('div', { class: 'msg err' }, 'No se pudo generar la vista previa: ' + (e && e.message ? e.message : e)));
+    }
+  })();
+  return { el: holder, destroy() { urls.forEach((u) => URL.revokeObjectURL(u)); } };
+}
+
+/** Panel de estado reutilizable: mensajes de error/aviso y resultado con vista previa antes de descargar. */
 function statusArea() {
   const el = h('div');
+  let viewer = null;
+  const dropViewer = () => { if (viewer) { try { viewer.destroy(); } catch { /* ya liberado */ } viewer = null; } };
   return {
     el,
-    clear() { el.replaceChildren(); },
-    error(text) { el.replaceChildren(h('div', { class: 'msg err' }, text)); },
+    clear() { dropViewer(); el.replaceChildren(); },
+    error(text) { dropViewer(); el.replaceChildren(h('div', { class: 'msg err' }, text)); },
     warn(text) { el.append(h('div', { class: 'msg warn' }, text)); },
     done({ blob, filename, title, detail, extra }) {
+      dropViewer();
+      const lower = String(filename).toLowerCase();
+      const pane = h('div', { class: 'docprev-body' });
+      if (lower.endsWith('.pdf')) {
+        blob.arrayBuffer().then((buf) => {
+          if (el.contains(pane)) { viewer = pdfViewer(new Uint8Array(buf)); pane.replaceChildren(viewer.el); }
+        });
+      } else if (lower.endsWith('.xlsx')) {
+        blob.arrayBuffer().then((buf) => {
+          if (el.contains(pane)) { viewer = xlsxViewer(buf); pane.replaceChildren(viewer.el); }
+        });
+      } else if (lower.endsWith('.zip')) {
+        viewer = zipViewer(blob); pane.replaceChildren(viewer.el);
+      } else if (/\.(docx|pptx)$/.test(lower)) {
+        viewer = officeViewer(blob, lower.slice(-4)); pane.replaceChildren(viewer.el);
+      }
       el.replaceChildren(h('div', { class: 'result' },
         h('h3', {}, title || '¡Listo!'),
         h('div', {}, filename + ' · ' + fmtSize(blob.size) + (detail ? ' · ' + detail : '')),
+        /\.(pdf|xlsx|zip|docx|pptx)$/.test(lower) ? h('div', { class: 'hint' }, 'Vista previa — revisa que todo esté bien antes de descargar:') : null,
+        pane,
         extra || null,
         h('div', { class: 'row' },
           h('button', { class: 'btn', onclick: () => download(blob, filename) }, '[ Descargar archivo ]'),
+          h('button', { class: 'btn ghost', onclick: () => {
+            const box = el.parentElement;
+            dropViewer(); el.replaceChildren();
+            if (box) box.scrollIntoView({ block: 'start', behavior: 'smooth' });
+          } }, '↩ Volver a editar'),
           h('button', { class: 'btn ghost', onclick: (e) => e.target.dispatchEvent(new CustomEvent('pdf:reset', { bubbles: true })) },
             '↺ Procesar otro documento'))));
     },
@@ -728,17 +901,10 @@ tools.push({
       const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-      const sample = allAoa[0].slice(0, 15);
-      const width = Math.min(Math.max(0, ...sample.map((r) => r.length)), 12);
-      const table = h('table', {}, ...sample.map((r) =>
-        h('tr', {}, ...Array.from({ length: width }, (_, i) => h('td', {}, r[i] == null ? '' : String(r[i]))))));
       status.done({
         blob, filename: baseName(file) + '.xlsx',
         detail: allAoa.reduce((a, x) => a + x.length, 0) + ' filas' + (usedOcr ? ' · leído con OCR' : ''),
-        extra: h('div', {},
-          usedOcr ? h('div', { class: 'msg warn' }, 'El texto se reconoció con OCR: revisa números y nombres, pueden contener errores de lectura.') : null,
-          h('div', { class: 'hint' }, 'Vista previa de las primeras filas — revisa que las columnas coincidan antes de usarlo:'),
-          h('div', { class: 'preview' }, table)),
+        extra: usedOcr ? h('div', { class: 'msg warn' }, 'El texto se reconoció con OCR: revisa números y nombres, pueden contener errores de lectura.') : null,
       });
     }));
     box.append(dz, info, opts, h('div', { class: 'row' }, go), prog.el, status.el);

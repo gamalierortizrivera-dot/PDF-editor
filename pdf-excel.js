@@ -662,17 +662,12 @@ const pdfExcelTool = {
       const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       prog.hide();
 
-      const sample = preview.slice(0, 18);
-      const width = Math.min(Math.max(1, ...sample.map((r) => (r ? r.length : 0))), 12);
-      const table = h('table', {}, ...sample.map((r) =>
-        h('tr', {}, ...Array.from({ length: width }, (_, i) => h('td', {}, r && r[i] != null ? String(r[i]) : '')))));
       status.done({
         blob, filename: baseName(file) + '.xlsx',
         detail: totalRows + ' filas' + (fiel ? ' · ' + totalTables + ' tablas detectadas' : '') + (usedOcr ? ' · leído con OCR' : ''),
         extra: h('div', {},
           usedOcr ? h('div', { class: 'msg warn' }, 'El texto se reconoció con OCR: revisa números y nombres, pueden contener errores de lectura.') : null,
-          h('div', { class: 'hint' }, 'Vista previa de la primera hoja (el archivo conserva bordes, formato y anchos):'),
-          h('div', { class: 'preview' }, table)),
+          h('div', { class: 'hint' }, 'El archivo conserva bordes, formato y anchos; la vista previa solo muestra los valores.')),
       });
     }));
     box.append(dz, info, opts, h('div', { class: 'row' }, go), prog.el, status.el);

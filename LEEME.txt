@@ -1,0 +1,15 @@
+PDF Privado - cambios de "vista previa antes de descargar"
+
+Sube estos 5 archivos al repo gamalierortizrivera-dot/PDF-editor (rama main),
+respetando la carpeta de cada uno (reemplazan a los que ya existen):
+
+  app.js            -> raiz del repo
+  tools-extra.js    -> raiz del repo
+  pdf-excel.js      -> raiz del repo
+  sw.js             -> raiz del repo
+  css/tools.css     -> carpeta css/
+
+Desde la web de GitHub: entra a la carpeta (o a la raiz), Add file > Upload files,
+elige el archivo y haz Commit. Para css/tools.css, abre primero la carpeta css/.
+
+Si algo falla, la copia anterior esta en PDF-editor-backup-antes-vista-previa.zip.
