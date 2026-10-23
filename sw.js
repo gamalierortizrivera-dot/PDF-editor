@@ -1,9 +1,9 @@
-/* PDF Privado — service worker.
+/* Conffetti PDF — service worker.
  * Solo guarda en caché los archivos de la propia aplicación (HTML, CSS, JS, librerías) para que
  * funcione sin conexión. Los documentos del usuario nunca pasan por aquí: se leen en la página. */
 'use strict';
 
-const CACHE = 'pdf-privado-v5';
+const CACHE = 'conffetti-pdf-v6';
 const CORE = [
   './', 'index.html', 'manifest.webmanifest',
   'css/tokens.css', 'css/base.css', 'css/components.css', 'css/tools.css',
@@ -11,7 +11,7 @@ const CORE = [
   'app.js', 'tools-extra.js', 'pdf-excel.js', 'qr-tool.js',
   'vendor/pdf-lib.min.js', 'vendor/pdf.min.js', 'vendor/pdf.worker.min.js', 'vendor/xlsx.full.min.js',
   'vendor/jszip.min.js', 'vendor/exceljs.min.js', 'vendor/pptxgen.min.js', 'vendor/qrcode.min.js', 'vendor/tesseract/tesseract.min.js',
-  'icons/icon-192.png', 'icons/icon-512.png',
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/logo.png',
 ];
 
 self.addEventListener('install', (event) => {

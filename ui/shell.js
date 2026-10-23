@@ -1,4 +1,4 @@
-/* PDF Privado — shell de interfaz: catálogo, búsqueda, pestañas y espacio de trabajo en pasos.
+/* Conffetti PDF — shell de interfaz: catálogo, búsqueda, pestañas y espacio de trabajo en pasos.
  * Las herramientas (app.js, tools-extra.js, pdf-excel.js) solo se registran en `tools` y
  * se montan con render(box); este archivo decide cómo se presentan. */
 'use strict';
@@ -74,7 +74,7 @@ function toolCard(t) {
 
 function renderHome() {
   stopObserver();
-  document.title = 'PDF Privado — herramientas PDF 100% locales';
+  document.title = 'Conffetti PDF — herramientas PDF 100% locales';
   const all = uiTools();
   const q = norm(uiState.q.trim());
   const list = all.filter((t) => (q ? matchesQuery(t, q) : uiState.cat === 'all' || TOOL_UI[t.id].cat === uiState.cat));
@@ -152,7 +152,7 @@ async function showPreview(main, files) {
 function openTool(t) {
   stopObserver();
   const meta = TOOL_UI[t.id];
-  document.title = t.title + ' — PDF Privado';
+  document.title = t.title + ' — Conffetti PDF';
   const box = h('div', { class: 'tool-box' });
   const ws = h('section', { class: 'ws', 'data-step': '1', 'data-tool': t.id });
 
@@ -197,8 +197,9 @@ function openTool(t) {
 
 function renderInstall() {
   stopObserver();
-  document.title = 'Descargar app — PDF Privado';
+  document.title = 'Descargar app — Conffetti PDF';
   const isMac = /Mac/i.test(navigator.platform || navigator.userAgent);
+  const isWin = /Win/i.test(navigator.platform || navigator.userAgent);
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   const status = h('div');
   const steps = h('div');
@@ -206,13 +207,13 @@ function renderInstall() {
   const paint = () => {
     const btnHost = [];
     if (uiPwa.installed) {
-      status.replaceChildren(h('div', { class: 'msg ok' }, '✔ Ya estás usando PDF Privado como app. Se abre en su propia ventana y funciona sin conexión.'));
+      status.replaceChildren(h('div', { class: 'msg ok' }, '✔ Ya estás usando Conffetti PDF como app. Se abre en su propia ventana y funciona sin conexión.'));
     } else if (uiPwa.deferred) {
       status.replaceChildren(h('button', { class: 'btn go', onclick: async () => {
         const e = uiPwa.deferred; uiPwa.deferred = null; e.prompt();
         try { await e.userChoice; } catch { /* cancelado */ }
         paint();
-      } }, '[ Instalar PDF Privado ]'));
+      } }, '[ Instalar Conffetti PDF ]'));
     } else {
       status.replaceChildren(h('div', { class: 'msg warn' },
         'Tu navegador no ofrece el botón automático. Sigue los pasos de abajo según tu navegador.'));
@@ -223,11 +224,11 @@ function renderInstall() {
           h('h3', {}, 'Safari (macOS Sonoma 14 o superior)'),
           h('ol', {}, h('li', {}, 'Abre esta página en Safari.'),
             h('li', {}, 'En el menú, elige Archivo → Añadir al Dock…'),
-            h('li', {}, 'Pulsa Añadir. Aparecerá “PDF Privado” en tu Dock.'))),
+            h('li', {}, 'Pulsa Añadir. Aparecerá “Conffetti PDF” en tu Dock.'))),
         h('div', { class: 'install-card' + (!isSafari ? ' mine' : '') },
           h('h3', {}, 'Chrome, Edge o Brave'),
           h('ol', {}, h('li', {}, 'Pulsa el icono de instalar ⊕ en la barra de direcciones (a la derecha).'),
-            h('li', {}, 'O abre el menú ⋮ → Guardar y compartir → Instalar “PDF Privado”.'),
+            h('li', {}, 'O abre el menú ⋮ → Guardar y compartir → Instalar “Conffetti PDF”.'),
             h('li', {}, 'Se abrirá en su propia ventana y quedará en Launchpad y Dock.')))),
       h('p', { class: 'hint' }, uiPwa.offlineReady
         ? '✔ Los archivos de la app ya están guardados en este navegador: puedes usarla sin internet.'
@@ -240,15 +241,21 @@ function renderInstall() {
   app.replaceChildren(...[
     h('button', { class: 'back', onclick: () => { location.hash = ''; } }, uiIcon('back', 16), 'Todas las herramientas'),
     h('section', { class: 'hero' },
-      h('h1', {}, 'Descarga PDF Privado en tu ' + (isMac ? 'Mac' : 'equipo')),
+      h('h1', {}, 'Descarga Conffetti PDF en tu ' + (isMac ? 'Mac' : isWin ? 'PC con Windows' : 'equipo')),
       h('p', {}, 'Instálala como una app: icono en el Dock, ventana propia y funcionamiento sin conexión. Tus documentos se siguen procesando solo en tu equipo.')),
     isMac ? h('div', { class: 'dmg-card' },
       h('div', {},
         h('h3', {}, 'Descargar para Mac (.dmg)'),
-        h('p', {}, 'App nativa para Apple Silicon e Intel (macOS 12 o superior). Ábrela y arrastra PDF Privado a Aplicaciones.')),
-      h('a', { class: 'btn', href: 'downloads/PDF-Privado-macOS.dmg', download: 'PDF-Privado-macOS.dmg' }, '[ Descargar .dmg ]'),
-      h('p', { class: 'hint' }, 'Primera vez: como la app aún no está firmada por un desarrollador de Apple, macOS puede avisar. Haz clic derecho sobre PDF Privado → Abrir → Abrir. Solo se pide una vez.')) : null,
-    h('h3', { class: 'alt-title' }, isMac ? 'O instálala desde el navegador (sin descargar nada)' : 'Instalar desde el navegador'),
+        h('p', {}, 'App nativa para Apple Silicon e Intel (macOS 12 o superior). Ábrela y arrastra Conffetti PDF a Aplicaciones.')),
+      h('a', { class: 'btn', href: 'downloads/Conffetti-PDF-macOS.dmg', download: 'Conffetti-PDF-macOS.dmg' }, '[ Descargar .dmg ]'),
+      h('p', { class: 'hint' }, 'Primera vez: como la app aún no está firmada por un desarrollador de Apple, macOS puede avisar. Haz clic derecho sobre Conffetti PDF → Abrir → Abrir. Solo se pide una vez.')) : null,
+    isWin ? h('div', { class: 'dmg-card' },
+      h('div', {},
+        h('h3', {}, 'Descargar para Windows (.exe)'),
+        h('p', {}, 'Instalador para Windows 10 u 11 (64 bits). Se instala en un clic, sin conexión a internet y sin permisos de administrador.')),
+      h('a', { class: 'btn', href: 'downloads/Conffetti-PDF-Windows-Setup.exe', download: 'Conffetti-PDF-Windows-Setup.exe' }, '[ Descargar instalador ]'),
+      h('p', { class: 'hint' }, 'Primera vez: como el instalador aún no está firmado, Windows SmartScreen puede avisar. Pulsa «Más información» → «Ejecutar de todas formas».')) : null,
+    h('h3', { class: 'alt-title' }, (isMac || isWin) ? 'O instálala desde el navegador (sin descargar nada)' : 'Instalar desde el navegador'),
     status,
     h('div', { class: 'install-facts' },
       h('div', {}, h('b', {}, '🔒 Igual de privada'), h('span', {}, 'La app no sube nada: no hay servidor ni cuentas.')),

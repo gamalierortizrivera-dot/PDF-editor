@@ -1,0 +1,39 @@
+{
+  "name": "conffetti-pdf-windows",
+  "productName": "Conffetti PDF",
+  "version": "1.0.0",
+  "description": "Conffetti PDF: herramientas PDF 100% locales para Windows.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "prepare-web": "node prepare-web.js",
+    "start": "npm run prepare-web && electron .",
+    "selftest": "npm run prepare-web && electron . --selftest",
+    "dist": "npm run prepare-web && electron-builder --win --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "app.conffettipdf.win",
+    "productName": "Conffetti PDF",
+    "executableName": "Conffetti PDF",
+    "files": ["main.js", "web/**/*"],
+    "directories": { "output": "dist" },
+    "win": {
+      "icon": "icon.png",
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "artifactName": "Conffetti-PDF-Windows-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "language": "3082"
+    },
+    "fileAssociations": [
+      { "ext": "pdf", "name": "PDF", "role": "Viewer" }
+    ]
+  }
+}

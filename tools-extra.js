@@ -1,4 +1,4 @@
-/* PDF Privado — herramientas adicionales. Se carga después de app.js. */
+/* Conffetti PDF — herramientas adicionales. Se carga después de app.js. */
 'use strict';
 
 const { rgb, StandardFonts } = PDFLib;

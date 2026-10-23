@@ -1,4 +1,4 @@
-PDF Privado - nueva herramienta "Crear código QR"
+Conffetti PDF - nueva herramienta "Crear código QR"
 (incluye también los cambios pendientes de "Organizar y Eliminar Páginas" en ui/)
 
 IMPORTANTE: en GitHub (origin/main) los archivos icons.js y shell.js quedaron en la RAIZ
