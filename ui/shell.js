@@ -199,6 +199,7 @@ function renderInstall() {
   stopObserver();
   document.title = 'Descargar app — PDF Privado';
   const isMac = /Mac/i.test(navigator.platform || navigator.userAgent);
+  const isWin = /Win/i.test(navigator.platform || navigator.userAgent);
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   const status = h('div');
   const steps = h('div');
@@ -240,7 +241,7 @@ function renderInstall() {
   app.replaceChildren(...[
     h('button', { class: 'back', onclick: () => { location.hash = ''; } }, uiIcon('back', 16), 'Todas las herramientas'),
     h('section', { class: 'hero' },
-      h('h1', {}, 'Descarga PDF Privado en tu ' + (isMac ? 'Mac' : 'equipo')),
+      h('h1', {}, 'Descarga PDF Privado en tu ' + (isMac ? 'Mac' : isWin ? 'PC con Windows' : 'equipo')),
       h('p', {}, 'Instálala como una app: icono en el Dock, ventana propia y funcionamiento sin conexión. Tus documentos se siguen procesando solo en tu equipo.')),
     isMac ? h('div', { class: 'dmg-card' },
       h('div', {},
@@ -248,7 +249,13 @@ function renderInstall() {
         h('p', {}, 'App nativa para Apple Silicon e Intel (macOS 12 o superior). Ábrela y arrastra PDF Privado a Aplicaciones.')),
       h('a', { class: 'btn', href: 'downloads/PDF-Privado-macOS.dmg', download: 'PDF-Privado-macOS.dmg' }, '[ Descargar .dmg ]'),
       h('p', { class: 'hint' }, 'Primera vez: como la app aún no está firmada por un desarrollador de Apple, macOS puede avisar. Haz clic derecho sobre PDF Privado → Abrir → Abrir. Solo se pide una vez.')) : null,
-    h('h3', { class: 'alt-title' }, isMac ? 'O instálala desde el navegador (sin descargar nada)' : 'Instalar desde el navegador'),
+    isWin ? h('div', { class: 'dmg-card' },
+      h('div', {},
+        h('h3', {}, 'Descargar para Windows (.exe)'),
+        h('p', {}, 'Instalador para Windows 10 u 11 (64 bits). Se instala en un clic, sin conexión a internet y sin permisos de administrador.')),
+      h('a', { class: 'btn', href: 'downloads/PDF-Privado-Windows-Setup.exe', download: 'PDF-Privado-Windows-Setup.exe' }, '[ Descargar instalador ]'),
+      h('p', { class: 'hint' }, 'Primera vez: como el instalador aún no está firmado, Windows SmartScreen puede avisar. Pulsa «Más información» → «Ejecutar de todas formas».')) : null,
+    h('h3', { class: 'alt-title' }, (isMac || isWin) ? 'O instálala desde el navegador (sin descargar nada)' : 'Instalar desde el navegador'),
     status,
     h('div', { class: 'install-facts' },
       h('div', {}, h('b', {}, '🔒 Igual de privada'), h('span', {}, 'La app no sube nada: no hay servidor ni cuentas.')),
