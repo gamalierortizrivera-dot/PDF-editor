@@ -1,4 +1,4 @@
-/* PDF Privado — Crear código QR. Se carga después de tools-extra.js (reutiliza sus ayudas).
+/* Conffetti PDF — Crear código QR. Se carga después de tools-extra.js (reutiliza sus ayudas).
  * El QR se genera en el navegador con vendor/qrcode.min.js; nada sale del equipo. */
 'use strict';
 

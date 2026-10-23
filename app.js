@@ -1,4 +1,4 @@
-/* PDF Privado — todo corre en el navegador. No hay red, ni almacenamiento. */
+/* Conffetti PDF — todo corre en el navegador. No hay red, ni almacenamiento. */
 'use strict';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';

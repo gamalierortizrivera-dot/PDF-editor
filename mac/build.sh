@@ -1,19 +1,19 @@
 #!/bin/bash
-# Construye "PDF Privado.app" (universal: Apple Silicon + Intel) y el instalador .dmg.
+# Construye "Conffetti PDF.app" (universal: Apple Silicon + Intel) y el instalador .dmg.
 # Requiere macOS con las herramientas de línea de comandos de Xcode (swiftc, hdiutil, codesign).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$(pwd)"
 OUT="$ROOT/mac/build"
-APP="$OUT/PDF Privado.app"
+APP="$OUT/Conffetti PDF.app"
 DMG_DIR="$ROOT/downloads"
 rm -rf "$OUT" && mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources/web" "$DMG_DIR"
 
 echo "→ Compilando…"
 for arch in arm64 x86_64; do
-  swiftc -O -swift-version 5 -target "$arch-apple-macos12.0" mac/main.swift -o "$OUT/PDFPrivado-$arch"
+  swiftc -O -swift-version 5 -target "$arch-apple-macos12.0" mac/main.swift -o "$OUT/ConffettiPDF-$arch"
 done
-lipo -create "$OUT/PDFPrivado-arm64" "$OUT/PDFPrivado-x86_64" -output "$APP/Contents/MacOS/PDFPrivado"
+lipo -create "$OUT/ConffettiPDF-arm64" "$OUT/ConffettiPDF-x86_64" -output "$APP/Contents/MacOS/ConffettiPDF"
 cp mac/Info.plist "$APP/Contents/Info.plist"
 
 echo "→ Copiando la web…"
@@ -36,6 +36,6 @@ echo "→ Creando .dmg…"
 STAGE="$OUT/dmg"; mkdir -p "$STAGE"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
-rm -f "$DMG_DIR/PDF-Privado-macOS.dmg"
-hdiutil create -volname "PDF Privado" -srcfolder "$STAGE" -ov -format UDZO "$DMG_DIR/PDF-Privado-macOS.dmg" >/dev/null
-echo "Listo: $DMG_DIR/PDF-Privado-macOS.dmg"
+rm -f "$DMG_DIR/Conffetti-PDF-macOS.dmg"
+hdiutil create -volname "Conffetti PDF" -srcfolder "$STAGE" -ov -format UDZO "$DMG_DIR/Conffetti-PDF-macOS.dmg" >/dev/null
+echo "Listo: $DMG_DIR/Conffetti-PDF-macOS.dmg"

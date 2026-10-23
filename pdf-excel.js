@@ -1,4 +1,4 @@
-/* PDF Privado — PDF a Excel "copia fiel": tablas, bordes, celdas combinadas, anchos y formato.
+/* Conffetti PDF — PDF a Excel "copia fiel": tablas, bordes, celdas combinadas, anchos y formato.
  * Lee el texto, las líneas y los rellenos del PDF y los reconstruye en una hoja de Excel (ExcelJS). */
 'use strict';
 
@@ -643,7 +643,7 @@ const pdfExcelTool = {
       });
 
       const wb = new ExcelJS.Workbook();
-      wb.creator = 'PDF Privado';
+      wb.creator = 'Conffetti PDF';
       const cfg = { tol, numbers: nums.value, styles: fiel, stack: sheets.value === 'una' };
       let totalRows = 0, totalTables = 0, preview = [];
       if (sheets.value === 'una') {

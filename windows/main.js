@@ -1,4 +1,4 @@
-// PDF Privado — envoltorio nativo para Windows (Electron).
+// Conffetti PDF — envoltorio nativo para Windows (Electron).
 // Sirve la web incluida en el paquete mediante un esquema local (app://) y bloquea toda conexión de red.
 'use strict';
 const { app, BrowserWindow, Menu, protocol, session, net } = require('electron');
@@ -6,7 +6,7 @@ const path = require('path');
 const { pathToFileURL } = require('url');
 
 const WEB = path.join(__dirname, 'web');
-const selfTest = process.argv.includes('--selftest') || !!process.env.PDFPRIVADO_SELFTEST;
+const selfTest = process.argv.includes('--selftest') || !!process.env.CONFFETTIPDF_SELFTEST;
 
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
@@ -44,7 +44,7 @@ function lockDownSession(ses) {
 function createWindow() {
   win = new BrowserWindow({
     width: 1280, height: 860, minWidth: 760, minHeight: 520,
-    title: 'PDF Privado',
+    title: 'Conffetti PDF',
     backgroundColor: '#0F172A',
     icon: path.join(__dirname, 'icon.png'),
     show: false,
@@ -77,7 +77,7 @@ function createWindow() {
 async function runSelfTest() {
   const code = `(async () => {
     await new Promise(r => setTimeout(r, 800));
-    const out = { cards: document.querySelectorAll('.card').length, ua: navigator.userAgent.includes('PDFPrivadoWin') };
+    const out = { cards: document.querySelectorAll('.card').length, ua: navigator.userAgent.includes('ConffettiPDFWin') };
     try { await fetch('https://example.com', { mode: 'no-cors' }); out.network = 'ABIERTA'; } catch (e) { out.network = 'bloqueada'; }
     return JSON.stringify(out);
   })()`;
@@ -105,7 +105,7 @@ function buildMenu() {
 }
 
 app.whenReady().then(() => {
-  app.userAgentFallback += ' PDFPrivadoWin/1.0';
+  app.userAgentFallback += ' ConffettiPDFWin/1.0';
   serveWeb();
   lockDownSession(session.defaultSession);
   buildMenu();

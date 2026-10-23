@@ -55,21 +55,11 @@ function uiIcon(name, size = 24, stroke = 1.8) {
 
 /** Logo: documento con escudo de seguridad. */
 function uiLogo(size = 34) {
-  const svg = document.createElementNS(UI_SVG_NS, 'svg');
-  svg.setAttribute('viewBox', '0 0 40 40');
-  svg.setAttribute('width', String(size));
-  svg.setAttribute('height', String(size));
-  svg.setAttribute('aria-hidden', 'true');
-  const add = (tag, attrs) => {
-    const el = document.createElementNS(UI_SVG_NS, tag);
-    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
-    svg.append(el);
-  };
-  add('rect', { width: '40', height: '40', rx: '11', fill: '#10B981' });
-  add('path', { d: 'M12 8h10l6 6v18H12z', fill: '#04120C', opacity: '0.22' });
-  add('path', { d: 'M12 8h10l6 6v18H12z', fill: 'none', stroke: '#04120C', 'stroke-width': '2.2', 'stroke-linejoin': 'round' });
-  add('path', { d: 'M22 8v6h6', fill: 'none', stroke: '#04120C', 'stroke-width': '2.2', 'stroke-linejoin': 'round' });
-  add('path', { d: 'M24 21l6 2.2v4.6c0 3-2.4 5-6 6.2-3.6-1.2-6-3.2-6-6.2v-4.6z', fill: '#F8FAFC', stroke: '#04120C', 'stroke-width': '1.8', 'stroke-linejoin': 'round' });
-  add('path', { d: 'M21.2 27.8l2 2 3.6-3.8', fill: 'none', stroke: '#10B981', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
-  return svg;
+  const img = document.createElement('img');
+  img.src = 'icons/logo.png';
+  img.alt = '';
+  img.width = size;
+  img.height = size;
+  img.setAttribute('aria-hidden', 'true');
+  return img;
 }

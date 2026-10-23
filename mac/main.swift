@@ -1,4 +1,4 @@
-// PDF Privado — envoltorio nativo para macOS.
+// Conffetti PDF — envoltorio nativo para macOS.
 // Muestra la página web incluida en el paquete dentro de un WKWebView. Los archivos se sirven desde el
 // propio .app mediante un esquema local (app://); la app no abre conexiones de red.
 import Cocoa
@@ -57,13 +57,13 @@ final class BundleSchemeHandler: NSObject, WKURLSchemeHandler {
 final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, WKUIDelegate, WKDownloadDelegate {
     private var window: NSWindow!
     private var webView: WKWebView!
-    private let selfTest = ProcessInfo.processInfo.environment["PDFPRIVADO_SELFTEST"] != nil
+    private let selfTest = ProcessInfo.processInfo.environment["CONFFETTIPDF_SELFTEST"] != nil
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let config = WKWebViewConfiguration()
         let web = Bundle.main.resourceURL!.appendingPathComponent("web")
         config.setURLSchemeHandler(BundleSchemeHandler(root: web), forURLScheme: "app")
-        config.applicationNameForUserAgent = "PDFPrivadoMac/1.0"
+        config.applicationNameForUserAgent = "ConffettiPDFMac/1.0"
 
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
@@ -73,11 +73,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
             contentRect: NSRect(x: 0, y: 0, width: 1280, height: 860),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered, defer: false)
-        window.title = "PDF Privado"
+        window.title = "Conffetti PDF"
         window.minSize = NSSize(width: 760, height: 520)
         window.contentView = webView
         window.center()
-        window.setFrameAutosaveName("PDFPrivadoMain")
+        window.setFrameAutosaveName("ConffettiPDFMain")
         window.makeKeyAndOrderFront(nil)
 
         buildMenu()
@@ -92,11 +92,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         let appItem = NSMenuItem()
         main.addItem(appItem)
         let appMenu = NSMenu()
-        appMenu.addItem(withTitle: "Acerca de PDF Privado", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(withTitle: "Acerca de Conffetti PDF", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Ocultar PDF Privado", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(withTitle: "Ocultar Conffetti PDF", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "Salir de PDF Privado", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "Salir de Conffetti PDF", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
 
         let editItem = NSMenuItem()
@@ -165,13 +165,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
                  for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? { nil }
 
-    // MARK: - Autoprueba (solo con PDFPRIVADO_SELFTEST=1)
+    // MARK: - Autoprueba (solo con CONFFETTIPDF_SELFTEST=1)
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard selfTest else { return }
         let script = """
         await new Promise(r => setTimeout(r, 800));
-        const out = { cards: document.querySelectorAll('.card').length, ua: navigator.userAgent.includes('PDFPrivadoMac') };
+        const out = { cards: document.querySelectorAll('.card').length, ua: navigator.userAgent.includes('ConffettiPDFMac') };
         try { const m = await import(new URL('vendor/encrypt/index.mjs', location.href).href); out.module = typeof m.encryptPDF; } catch (e) { out.module = 'ERR ' + e; }
         try {
           const c = document.createElement('canvas'); c.width = 900; c.height = 160;

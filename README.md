@@ -29,17 +29,17 @@ Para añadir una herramienta: registra un objeto `{ id, icon, title, desc, rende
 agrega su entrada (categoría, descripción corta, palabras clave) en `TOOL_UI` de `ui/shell.js`.
 
 ## App nativa de macOS (.dmg)
-`mac/build.sh` construye `downloads/PDF-Privado-macOS.dmg` (universal: Apple Silicon + Intel) con las
+`mac/build.sh` construye `downloads/Conffetti-PDF-macOS.dmg` (universal: Apple Silicon + Intel) con las
 herramientas de línea de comandos de Xcode. La app es un envoltorio WKWebView que sirve la web desde su
 propio paquete (esquema `app://`); no abre conexiones de red. Está firmada ad hoc: para distribuirla sin
 avisos de Gatekeeper hace falta firma y notarización con una cuenta de Apple Developer.
-Autoprueba: `PDFPRIVADO_SELFTEST=1 "mac/build/PDF Privado.app/Contents/MacOS/PDFPrivado"`.
+Autoprueba: `CONFFETTIPDF_SELFTEST=1 "mac/build/Conffetti PDF.app/Contents/MacOS/ConffettiPDF"`.
 
 ## App de escritorio para Windows (.exe)
 `windows/` contiene un envoltorio Electron equivalente al de macOS: sirve la web desde su propio paquete
 (esquema `app://`), bloquea toda conexión de red y usa el diálogo «Guardar como» de Windows para las descargas.
 - Probar en local: `cd windows && npm install && npm start` (autoprueba: `npm run selftest`).
-- Instalador: `npm run dist` genera `windows/dist/PDF-Privado-Windows-Setup.exe` (NSIS, x64). Hay que ejecutarlo en
+- Instalador: `npm run dist` genera `windows/dist/Conffetti-PDF-Windows-Setup.exe` (NSIS, x64). Hay que ejecutarlo en
   Windows; el flujo `.github/workflows/windows.yml` lo construye en GitHub Actions y lo sube como artefacto.
-- Para que el botón de descarga de la web funcione, copia el `.exe` a `downloads/PDF-Privado-Windows-Setup.exe`.
+- Para que el botón de descarga de la web funcione, copia el `.exe` a `downloads/Conffetti-PDF-Windows-Setup.exe`.
 - Sin firmar: Windows SmartScreen avisará hasta que se firme con un certificado de firma de código.

@@ -1,8 +1,8 @@
 {
-  "name": "pdf-privado-windows",
-  "productName": "PDF Privado",
+  "name": "conffetti-pdf-windows",
+  "productName": "Conffetti PDF",
   "version": "1.0.0",
-  "description": "PDF Privado: herramientas PDF 100% locales para Windows.",
+  "description": "Conffetti PDF: herramientas PDF 100% locales para Windows.",
   "main": "main.js",
   "private": true,
   "scripts": {
@@ -16,15 +16,15 @@
     "electron-builder": "^25.1.8"
   },
   "build": {
-    "appId": "app.pdfprivado.win",
-    "productName": "PDF Privado",
-    "executableName": "PDF Privado",
+    "appId": "app.conffettipdf.win",
+    "productName": "Conffetti PDF",
+    "executableName": "Conffetti PDF",
     "files": ["main.js", "web/**/*"],
     "directories": { "output": "dist" },
     "win": {
       "icon": "icon.png",
       "target": [{ "target": "nsis", "arch": ["x64"] }],
-      "artifactName": "PDF-Privado-Windows-Setup.${ext}"
+      "artifactName": "Conffetti-PDF-Windows-Setup.${ext}"
     },
     "nsis": {
       "oneClick": false,
