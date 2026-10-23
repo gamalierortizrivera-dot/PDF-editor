@@ -6,7 +6,7 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0F172A",
+  "background_color": "#FFFFFF",
   "theme_color": "#10B981",
   "categories": ["productivity", "utilities"],
   "icons": [
